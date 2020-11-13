@@ -45,7 +45,7 @@ namespace ChatBot_Server_Milosevic
             byte[] buff = new byte[128];
             int receivedBytes = 0;
             int sendedBytes = 0;
-            string receivedString, sendString;
+            string receivedString, sendString = "";
 
             while (true)
             {
@@ -60,41 +60,43 @@ namespace ChatBot_Server_Milosevic
                 //    break;
                 //}
 
-                switch (receivedString.ToUpper())
+                if (receivedString != "\r\n")
                 {
-                    case "QUIT":
+                    if (receivedString.ToUpper() == "QUIT")
+                    {
                         break;
+                    }
 
-                    case "COME STAI?":
-                        sendString = "BENE";
-                        break;
+                    switch (receivedString.ToUpper())
+                    {
+                        case "COME STAI?":
+                            sendString = "BENE";
+                            break;
 
-                    case "CHE FAI?":
-                        sendString = "NIENTE";
-                        break;
+                        case "CHE FAI?":
+                            sendString = "NIENTE";
+                            break;
 
-                    case "CIAO":
-                        sendString = "CIAO";
-                        break;
+                        case "CIAO":
+                            sendString = "CIAO";
+                            break;
 
-                    default:
-                        sendString = "Non ho capito!!";
-                        break;
+                        default:
+                            sendString = "Non ho capito!!";
+                            break;
+                    }
+
+                    Array.Clear(buff, 0, buff.Length);
+                    sendedBytes = 0;
+
+                    //lo converto in byte
+                    buff = Encoding.ASCII.GetBytes(sendString);
+
+                    //invio al client il messaggio
+                    sendedBytes = client.Send(buff);
+
+                    Array.Clear(buff, 0, buff.Length);
                 }
-
-                Array.Clear(buff, 0, buff.Length);
-                sendedBytes = 0;
-
-                // crea il messaggio
-                sendString = "Benvenuto client";
-
-                //lo converto in byte
-                buff = Encoding.ASCII.GetBytes(sendString);
-
-                //invio al client il messaggio
-                sendedBytes = client.Send(buff);
-
-                Array.Clear(buff, 0, buff.Length);
             }
 
             // Termina il programma
